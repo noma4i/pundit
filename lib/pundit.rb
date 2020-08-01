@@ -221,8 +221,9 @@ module Pundit
 
     policy = policy_class ? policy_class.new(pundit_user, record) : policy(record)
 
-    raise NotAuthorizedError, query: query, record: record, policy: policy unless policy.public_send(query)
-
+    result = policy.public_send(query)
+    raise NotAuthorizedError, query: query, record: record, policy: policy, reason: result if !result || result.is_a?(Symbol)
+    
     record.is_a?(Array) ? record.last : record
   end
 
